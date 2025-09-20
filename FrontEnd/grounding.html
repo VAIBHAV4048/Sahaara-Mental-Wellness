@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahaara - Breathing Exercise</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/framer-motion@latest/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    
+    const { useState, useEffect, useRef } = React;
+    const { motion, AnimatePresence } = Motion;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(freq = 523.25, duration = 0.1) {
+      if (!audioCtx || audioCtx.state !== 'running') return;
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+      oscillator.start(audioCtx.currentTime);
+      oscillator.stop(audioCtx.currentTime + duration);
+    }
+    
+    function triggerVibration(pattern) {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(pattern);
+        }
+    }
+
+    function TimerCircle({ timeLeft, duration }) {
+        const radius = 50;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (timeLeft / duration) * circumference;
+
+        return (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-96 sm:h-96">
+                <svg className="w-full h-full" viewBox="0 0 120 120">
+                    <circle
+                        className="text-white/10"
+                        strokeWidth="4"
+                        stroke="currentColor"
+                        fill="transparent"
+                        r={radius}
+                        cx="60"
+                        cy="60"
+                    />
+                    <motion.circle
+                        className="text-[#f9e79f]"
+                        strokeWidth="4"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={offset}
+                        strokeLinecap="round"
+                        stroke="currentColor"
+                        fill="transparent"
+                        r={radius}
+                        cx="60"
+                        cy="60"
+                        transform="rotate(-90 60 60)"
+                        style={{ transition: "stroke-dashoffset 1s linear" }}
+                    />
+                </svg>
+            </div>
+        );
+    }
+
+    function BreathingActivity() {
+      const [phase, setPhase] = useState('in');
+      const [instruction, setInstruction] = useState('Get Ready...');
+      const [isFinished, setIsFinished] = useState(false);
+      const [isStarted, setIsStarted] = useState(false);
+      
+      const DURATION = 60;
+      const [timeLeft, setTimeLeft] = useState(DURATION);
+
+      const handleStart = () => {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        setIsStarted(true);
+      };
+
+      // Effect for the breathing cycle animation
+      useEffect(() => {
+        if (!isStarted || isFinished) return;
+
+        const timeouts = [];
+        const cycle = () => {
+            setPhase('in'); setInstruction('Breathe in...'); playSound(523.25); triggerVibration(4000);
+            timeouts.push(setTimeout(() => { setPhase('hold_in'); setInstruction('Hold'); playSound(659.25); triggerVibration(100); }, 4000));
+            timeouts.push(setTimeout(() => { setPhase('out'); setInstruction('Breathe out...'); playSound(523.25); triggerVibration([100, 50, 100]); }, 8000));
+            timeouts.push(setTimeout(() => { setPhase('hold_out'); setInstruction('Hold'); playSound(659.25); triggerVibration(100); }, 12000));
+        };
+        
+        cycle();
+        const interval = setInterval(cycle, 16000);
+        
+        return () => {
+            clearInterval(interval);
+            timeouts.forEach(clearTimeout);
+        };
+      }, [isStarted, isFinished]);
+
+      // Effect for the countdown timer
+      useEffect(() => {
+        if (!isStarted || isFinished) return;
+        
+        if (timeLeft <= 0) {
+            setIsFinished(true);
+            return;
+        }
+
+        const timer = setInterval(() => {
+            setTimeLeft(prev => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+      }, [isStarted, isFinished, timeLeft]);
+
+
+      const getScale = () => {
+        if (phase === 'in' || phase === 'hold_in') return 1.5;
+        return 1;
+      };
+
+      const renderContent = () => {
+        if (isFinished) {
+            return (
+                <motion.div key="completion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-6">
+                    <div className="flex justify-center"><svg className="w-16 h-16 text-[#f9e79f]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                    <h2 className="text-4xl font-bold">Well Done!</h2>
+                    <p className="text-white/80">You've completed the exercise.</p>
+                    {/* --- CORRECTED LINK --- */}
+                    <a href="./Recommendations.html" className="inline-block mt-4 py-3 px-8 bg-[#f4c1ad] text-[#333333] font-bold rounded-full transition-transform hover:scale-105">Finish</a>
+                </motion.div>
+            );
+        }
+        
+        if (!isStarted) {
+            return (
+                <motion.div key="start" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-8">
+                    <h2 className="text-4xl font-bold">1-Minute Breathing</h2>
+                    <p className="text-white/80">Find a comfortable position and get ready to begin.</p>
+                    <button onClick={handleStart} className="inline-block mt-4 py-3 px-12 bg-[#5a9482] text-white font-bold text-lg rounded-full transition-transform hover:scale-105">Start</button>
+                    {/* --- CORRECTED LINK --- */}
+                    <a href="./Recommendations.html" className="block mt-4 text-white/50 hover:text-white">Maybe later</a>
+                </motion.div>
+            );
+        }
+
+        return (
+            <motion.div key="breathing" initial={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full flex flex-col items-center justify-center text-center">
+                <TimerCircle timeLeft={timeLeft} duration={DURATION} />
+                <motion.div
+                    className="w-48 h-48 sm:w-64 sm:h-64 bg-gradient-to-br from-[#5a9482] to-[#7fb3a7] rounded-full flex items-center justify-center shadow-2xl z-10"
+                    animate={{ scale: getScale() }}
+                    transition={{ duration: 4, ease: 'easeInOut' }}
+                >
+                    <AnimatePresence mode="wait">
+                      <motion.p key={instruction} className="text-2xl font-bold" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                        {instruction}
+                      </motion.p>
+                    </AnimatePresence>
+                </motion.div>
+            </motion.div>
+        );
+      };
+
+      return (
+        <div className="w-full min-h-screen bg-[#2c4a41] flex flex-col items-center justify-center font-sans overflow-hidden p-4 relative text-white">
+            <AnimatePresence mode="wait">
+                {renderContent()}
+            </AnimatePresence>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<BreathingActivity />);
+    
+    </script>
+</body>
+</html>

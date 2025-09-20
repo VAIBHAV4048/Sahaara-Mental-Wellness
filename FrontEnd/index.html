@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahaara - Your Self-Care Co-Pilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // NEW: Tailwind CSS configuration to use custom color names
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'serenity-blue': '#5a9482',
+                        'sunrise-peach': '#f4c1ad',
+                        'muted-sage': '#eef1f5',
+                        'warm-gray': '#333333',
+                        'soft-yellow': '#f9e79f',
+                    }
+                }
+            }
+        }
+    </script>
+
+<style>
+/* Variables are still good for raw CSS, but Tailwind config is for utility classes */
+:root {
+    --serenity-blue: #5a9482;
+    --sunrise-peach: #f4c1ad;
+    --muted-sage: #eef1f5;
+    --warm-gray: #333333;
+    --soft-yellow: #f9e79f;
+}
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: var(--muted-sage);
+    color: var(--warm-gray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+h1, h2 { font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--serenity-blue); }
+.landing-page-content {
+    position: relative;
+    z-index: 10;
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem 1.5rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.logo { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.tagline { font-size: 1.2rem; font-weight: 400; }
+.mission-statement { font-size: 0.9rem; margin: 0 auto 1.5rem; }
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: var(--sunrise-peach);
+    color: var(--warm-gray);
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+    animation: breathe 4s ease-in-out infinite;
+    cursor: pointer;
+    border: none;
+}
+@keyframes breathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+    50% { transform: scale(1.03); box-shadow: 0 6px 18px rgba(244, 193, 173, 0.3); }
+}
+.background-ripple-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+.ripple { position: absolute; border-radius: 50%; opacity: 0.6; animation: ripple-move 25s infinite ease-in-out alternate; }
+.ripple:hover { transform: scale(0.95); opacity: 0.8; transition: transform 0.3s ease, opacity 0.3s ease; }
+.ripple-1 { width: 60vmin; height: 60vmin; background: var(--serenity-blue); top: -15vh; left: -15vw; }
+.ripple-2 { width: 70vmin; height: 70vmin; background: var(--sunrise-peach); bottom: -20vh; right: -20vw; animation-delay: 4s; }
+.ripple-3 { width: 50vmin; height: 50vmin; background: var(--soft-yellow); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 8s; }
+@keyframes ripple-move {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+    100% { transform: scale(1.2) translate(8vw, -10vh); opacity: 0.4; }
+}
+.trust-footer { position: absolute; bottom: 20px; width: 90%; max-width: 500px; text-align: center; z-index: 5; }
+.trust-footer p { font-size: 0.75rem; color: rgba(51, 51, 51, 0.6); }
+
+/* --- NEW: STYLES FOR POPUP MODAL --- */
+.modal-overlay {
+    transition: opacity 0.3s ease;
+}
+.modal-content {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .landing-page-content { padding: 4rem; }
+    .logo { font-size: 3rem; }
+    .tagline { font-size: 1.5rem; }
+    .mission-statement { font-size: 1rem; max-width: 400px; }
+    .cta-button { width: auto; }
+}
+</style>
+
+</head>
+<body>
+    <div class="background-ripple-container">
+        <div class="ripple ripple-1"></div>
+        <div class="ripple ripple-2"></div>
+        <div class="ripple ripple-3"></div>
+    </div>
+    
+    <main class="landing-page-content">
+        <h1 class="logo">Sahaara</h1>
+        <h2 class="tagline">Your Self-Care Co-Pilot</h2>
+        <p class="mission-statement">A safe space to find your peace and navigate your emotions.</p>
+        <button class="cta-button" id="startCheckinBtn">Start Your Check-in</button>
+    </main>
+
+    <footer class="trust-footer">
+        <p>Your privacy is our first priority. Your check-in is for your eyes only.</p>
+    </footer>
+
+    <div id="termsModal" class="hidden modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 opacity-0">
+        <div class="modal-content w-full max-w-lg bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 md:p-8 text-left opacity-0 transform scale-95">
+            <h2 class="text-2xl font-bold text-center mb-4">Terms of Service</h2>
+            <div class="h-48 overflow-y-auto p-4 bg-gray-100/50 rounded-lg text-sm text-gray-700 space-y-2">
+                <p>Welcome to Sahaara. By using our service, you agree that this is not a substitute for professional medical advice, diagnosis, or treatment. It is a tool for self-reflection.</p>
+                <p>Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read on this application.</p>
+                <p>Your data is stored locally on your device and is not shared. We are not responsible for any data loss.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 mt-6">
+                <button id="cancelBtn" class="w-full px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-full transition-opacity hover:opacity-80">Cancel</button>
+                <button id="agreeBtn" class="w-full px-6 py-3 bg-serenity-blue text-white font-bold rounded-full transition-opacity hover:opacity-90">Agree & Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('startCheckinBtn');
+            const modal = document.getElementById('termsModal');
+            const modalContent = modal.querySelector('.modal-content');
+            const agreeBtn = document.getElementById('agreeBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContent.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10); // small delay to allow CSS transitions to trigger
+            };
+
+            const closeModal = () => {
+                modal.classList.add('opacity-0');
+                modalContent.classList.add('opacity-0');
+                modalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300); // match transition duration
+            };
+
+            startBtn.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default action
+                openModal();
+            });
+
+            agreeBtn.addEventListener('click', () => {
+                // Redirect to the checkin page
+                window.location.href = './checkin.html';
+            });
+
+            cancelBtn.addEventListener('click', closeModal);
+            
+            // Also close modal if user clicks on the overlay
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
