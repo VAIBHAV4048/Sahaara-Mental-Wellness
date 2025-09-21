@@ -322,10 +322,23 @@
 
             const result = await response.json();
             
-            if (result.status === "crisis_detected") {
-                // Redirect to the crisis page immediately
-                window.location.href = './crisis.html';
-            } else {
+if (result.status === "crisis_detected") {
+    // --- FIX: Save a default recommendations object on crisis detection ---
+    const defaultRecs = {
+        recommendations_line: "Your safety is the first priority. Please connect with one of the resources below.",
+        chat_welcome: "If you need to talk, a conversation is just a click away.",
+        story_heading: "A Story of Hope",
+        story_text: "Even in the darkest moments, remember that help is available and things can get better. Your story is not over.",
+        story_reflection: "You are stronger than you think, and you are not alone.",
+        music_phrase: "Calm Music",
+        music_url: "./sounds/111.mp3"
+    };
+    localStorage.setItem('sahaaraRecommendations', JSON.stringify(defaultRecs));
+    // --- END OF FIX ---
+
+    // Redirect to the crisis page immediately
+    window.location.href = './crisis.html';
+}  else {
                 // Save the complete AI response to local storage
                 localStorage.setItem('sahaaraRecommendations', JSON.stringify(result));
                 
